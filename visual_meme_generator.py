@@ -19,8 +19,10 @@ import pandas as pd
 
 
 dropdown_files = pd.read_csv("dropdown_options.csv")
+number_of_images = len(dropdown_files) - 1
 dropdown_df = dropdown_files.to_dict("records")
 dropdown_options = list(dropdown_files['value'])
+
 
 maxNumberOfPosterGenerationsPerQuery = 5
 num_cashes_per_type_of_query = 1000
@@ -38,7 +40,7 @@ static_image_route = 'imgs/static/'
 
 app.layout = html.Div(
     [html.Div([html.H1("""Art of the March Generator"""),
-               html.P("""Generate Posters!\n This is an experimental "AI" that generates women's march posters.""")],
+               html.P("""This is an experimental "AI" that generates women's march posters.""")],
               className="w3-container w3-blue w3-padding-48 w3-center"),
      html.Div([
          dcc.Slider(
@@ -66,7 +68,8 @@ app.layout = html.Div(
                       style={'width': '100%'}, className="w3-margin-bottom"),
          html.Div(
              [html.Label("""Select an image for the poster generation."""),
-              dcc.Dropdown(id="image-dropdown", options=dropdown_df, value=dropdown_options[0]),
+              dcc.Slider(id="image-slider", min=0, max=number_of_images, step=1, value=50),
+              html.Div(id='image-slider-output', className="w3-margin-bottom"),
               html.Div([html.Img(id='image_selection_preview', width="""10%""", height="auto"), ]), ],
              className="w3-margin-bottom"),
          html.Button('Generate image based on text',
@@ -80,13 +83,23 @@ app.layout = html.Div(
 
 @app.callback(
     dash.dependencies.Output('image_selection_preview', 'src'),
-    [dash.dependencies.Input('image-dropdown', 'value')])
+    [dash.dependencies.Input('image-slider', 'value')])
 def update_image_src(value):
-    if value not in dropdown_options:
+    image_df = dropdown_files.iloc[value]
+    # image_file_name = image_df['label']
+    image_file_path = image_df['value']
+
+    if image_file_path not in dropdown_options:
         raise Exception('"{}" is excluded from the allowed static files'.format(value))
-    encoded_image = base64.b64encode(open(static_image_route + value, 'rb').read())
+    encoded_image = base64.b64encode(open(static_image_route + image_file_path, 'rb').read())
     return 'data:image/png;base64,{}'.format(encoded_image.decode())
 
+@app.callback(
+    dash.dependencies.Output('image-slider-output', 'children'),
+    [dash.dependencies.Input('image-slider', 'value')])
+def update_ai_creativity_to_user(value):
+    image_df = dropdown_files.iloc[value]
+    return image_df['label']
 
 @functools.lru_cache()
 def get_textgenn():
@@ -192,11 +205,11 @@ def make_the_image(str, img_file):
     dash.dependencies.Output('image', 'src'),
     [dash.dependencies.Input('pic-button', 'n_clicks')],
     [State(component_id='user-text-input', component_property='value'),
-     State(component_id='image-dropdown', component_property='value')])
-def update_image_src(n_clicks, str, file_name):
+     State(component_id='image-slider', component_property='value')])
+def update_image_src(n_clicks, str, value):
     if str == None:
         str = "TEXT WILL GO HERE"
-    output_file = make_the_image(str, file_name)
+    output_file = make_the_image(str,  dropdown_files.iloc[value]['value'])
     encoded_image = base64.b64encode(open(output_file, 'rb').read())
     return 'data:image/png;base64,{}'.format(encoded_image.decode())
 

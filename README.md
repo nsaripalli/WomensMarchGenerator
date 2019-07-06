@@ -7,6 +7,7 @@ Example poster creation:
 UI:
 ![Alt Text](screenshot.png)
 
+Requires Textgenrnn, Dash, and PIL
 
 TODO:
 Create better file names

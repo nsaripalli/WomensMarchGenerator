@@ -69,7 +69,7 @@ app.layout = html.Div(
                       style={'width': '100%'}, className="w3-margin-bottom"),
          html.Div(
              [html.Label("""Select an image for the poster generation."""),
-              dcc.Slider(id="image-slider", min=0, max=number_of_images, step=1, value=43),
+              dcc.Slider(id="image-slider", min=0, max=number_of_images, step=1, value=43 ),
               html.Div(id='image-slider-output', className="w3-margin-bottom"),
               html.Div([html.Img(id='image_selection_preview', width="""10%""", height="auto"), ]), ],
              className="w3-margin-bottom"),
@@ -79,7 +79,7 @@ app.layout = html.Div(
                                   w3-blue""",
                      style={'width': '562px', 'height': '52px'}), ],
          className="w3-container w3-margin w3-center"),
-     html.Div(html.Img(id='image'), className="w3-card-4 w3-hover-shadow w3-margin w3-center"), ])
+     html.Div(html.Img(id='image', style={'max-width': '100%', 'height': 'auto'}), className="w3-card-4 w3-hover-shadow w3-margin w3-center"), ])
 
 
 @app.callback(

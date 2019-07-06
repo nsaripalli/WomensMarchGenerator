@@ -18,7 +18,7 @@ import pandas as pd
 
 dropdown_files = pd.read_csv("dropdown_options.csv")
 dropdown_df = dropdown_files.to_dict("records")
-dropdown_list = list(dropdown_files['value'])
+dropdown_options = list(dropdown_files['value'])
 
 maxNumberOfPosterGenerationsPerQuery = 5
 num_cashes_per_type_of_query = 1000
@@ -45,7 +45,8 @@ def generate_table(dataframe, max_rows=10):
 
 
 app.layout = html.Div(
-    [html.Div([html.H1("""Women's March Poster Generator"""), html.P("""Generate Posters! ---More info goes here""")],
+    [html.Div([html.H1("""Women's March Poster Generator"""),
+               html.P("""Generate Posters!\n This is an experimental "AI" that generates women's march posters.""")],
               className="w3-container w3-blue w3-padding-48 w3-center"),
      html.Div([
          dcc.Slider(
@@ -73,7 +74,7 @@ app.layout = html.Div(
                       style={'width': '100%'}, className="w3-margin-bottom"),
          html.Div(
              [html.Label("""Select an image for the poster generation."""),
-              dcc.Dropdown(id="image-dropdown", options=dropdown_df, value=dropdown_list[0]),
+              dcc.Dropdown(id="image-dropdown", options=dropdown_df, value=dropdown_options[0]),
               html.Div([html.Img(id='image_selection_preview', width="""10%""", height="auto"), ]), ],
              className="w3-margin-bottom"),
          html.Button('Generate image based on text', id='pic-button'), ],
@@ -85,24 +86,23 @@ app.layout = html.Div(
     dash.dependencies.Output('image_selection_preview', 'src'),
     [dash.dependencies.Input('image-dropdown', 'value')])
 def update_image_src(value):
-    if value not in dropdown_list:
+    if value not in dropdown_options:
         raise Exception('"{}" is excluded from the allowed static files'.format(value))
     encoded_image = base64.b64encode(open(static_image_route + value, 'rb').read())
     return 'data:image/png;base64,{}'.format(encoded_image.decode())
 
 
-@functools.lru_cache(maxsize=32)
-def slow_function():
+@functools.lru_cache()
+def get_textgenn():
     textgen_2 = textgenrnn('textgenrnn_weights.hdf5')
     return textgen_2
 
 
 @functools.lru_cache(maxsize=num_cashes_per_type_of_query * 10)
-def textGen(numGen, temperature, randomState, return_as_list=True):
+def generate_text(numGen, temperature, randomState, return_as_list=True):
     del randomState
-    textgen_2 = slow_function()
+    textgen_2 = get_textgenn()
     out = textgen_2.generate(numGen, temperature=temperature, return_as_list=return_as_list)
-    textgen_2 = None
     return out
 
 
@@ -122,8 +122,8 @@ app.css.append_css({"external_url": "https://www.w3schools.com/w3css/4/w3.css"})
 def update_output(ns1, input2):
     numGen = maxNumberOfPosterGenerationsPerQuery
     intTemp = max(0, min(1, float(input2)))
-    out = (textGen(numGen, temperature=intTemp, randomState=random.randint(1, num_cashes_per_type_of_query),
-                   return_as_list=True))
+    out = (generate_text(numGen, temperature=intTemp, randomState=random.randint(1, num_cashes_per_type_of_query),
+                         return_as_list=True))
 
     return [[{'label': val, 'value': val} for val in out]]
 
@@ -131,14 +131,14 @@ def update_output(ns1, input2):
 @app.callback(
     dash.dependencies.Output('slider-output-container', 'children'),
     [dash.dependencies.Input('input-2-submit', 'value')])
-def update_output(value):
+def update_ai_creativity_to_user(value):
     return '"AI" creativity slider set to {} percent'.format(value * 100)
 
 
 @app.callback(
     dash.dependencies.Output('user-text-input', 'value'),
     [dash.dependencies.Input('dropdown', 'value')])
-def update_output(value):
+def selected_text_in_dropdown(value):
     return value
 
 
@@ -153,8 +153,8 @@ def make_the_image(str, img_file):
 
     filename = static_image_route + img_file
 
-    # TODO do not do random ints and generate better file names
-    outputFileName = "imgs/generated/{}_temp{}.jpg".format(img_file, random.randint(1, 999999999999))
+    # TODO do not do random ints
+    outputFileName = "imgs/generated/{}_temp{}.jpg".format(img_file.split(".")[0], random.randint(1, 999999999999))
 
     img = Image.open(filename)
     imageSize = img.size
@@ -183,8 +183,6 @@ def make_the_image(str, img_file):
 
     draw = ImageDraw.Draw(img)
 
-    # draw outlines
-    # there may be a better way
     outlineRange = int(fontSize / 15)
     for x in range(-outlineRange, outlineRange + 1):
         for y in range(-outlineRange, outlineRange + 1):
@@ -205,7 +203,6 @@ def make_the_image(str, img_file):
     [State(component_id='user-text-input', component_property='value'),
      State(component_id='image-dropdown', component_property='value')])
 def update_image_src(n_clicks, str, file_name):
-    # print the image_path to confirm the selection is as expected
     if str == None:
         str = "TEXT WILL GO HERE"
     output_file = make_the_image(str, file_name)
@@ -214,4 +211,4 @@ def update_image_src(n_clicks, str, file_name):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)

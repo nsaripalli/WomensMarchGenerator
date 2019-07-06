@@ -1,5 +1,6 @@
-# WomensMarchGenerator
-Using a neural network, generates women's march poster images
+# Womens March Poster Generator
+Using a neural network, generates women's march poster images. This was done in collaboration with
+the Northeastern School of Journalsim and the Art of the March.
 
 Example poster creation:
 ![Alt Text](example.gif)
@@ -7,8 +8,6 @@ Example poster creation:
 UI:
 ![Alt Text](screenshot.png)
 
-Requires Textgenrnn, Dash, and PIL
+Requires Textgenrnn, Dash, and Pillow
 
-TODO:
-Create better file names
-Refactor Code
+Posters sourced from http://artofthemarch.boston

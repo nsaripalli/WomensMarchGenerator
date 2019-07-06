@@ -4,3 +4,4 @@ textgenrnn
 pillow
 pandas
 gunicorn
+tensorflow

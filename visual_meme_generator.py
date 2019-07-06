@@ -37,7 +37,7 @@ server = app.server
 static_image_route = 'imgs/static/'
 
 app.layout = html.Div(
-    [html.Div([html.H1("""Women's March Poster Generator"""),
+    [html.Div([html.H1("""Art of the March Generator"""),
                html.P("""Generate Posters!\n This is an experimental "AI" that generates women's march posters.""")],
               className="w3-container w3-blue w3-padding-48 w3-center"),
      html.Div([
@@ -69,7 +69,11 @@ app.layout = html.Div(
               dcc.Dropdown(id="image-dropdown", options=dropdown_df, value=dropdown_options[0]),
               html.Div([html.Img(id='image_selection_preview', width="""10%""", height="auto"), ]), ],
              className="w3-margin-bottom"),
-         html.Button('Generate image based on text', id='pic-button'), ],
+         html.Button('Generate image based on text',
+                     id='pic-button',
+                     className="""w3-button;
+                                  w3-blue""",
+                     style={'width': '562px', 'height': '52px'}), ],
          className="w3-container w3-margin w3-center"),
      html.Div(html.Img(id='image'), className="w3-card-4 w3-hover-shadow w3-margin w3-center"), ])
 
@@ -131,6 +135,7 @@ def split_lines(sentence):
 
 
 def make_the_image(str, img_file):
+    """Largly inspired by https://github.com/danieldiekmeier/memegenerator/blob/master/memegenerator.py"""
     # Heroku requires generated files to be under tmp.
     os.makedirs("/tmp/imgs/generated/", exist_ok=True)
 
@@ -139,11 +144,12 @@ def make_the_image(str, img_file):
     filename = static_image_route + img_file
 
     # TODO do not do random ints
+    # TODO use pathlib instead
     outputFileName = "/tmp/imgs/generated/{}_temp{}.jpg".format(img_file.split(".")[0], random.randint(1, 999999999999))
 
     img = Image.open(filename)
     imageSize = img.size
-    fontLocation = "Gaegu/Gaegu-Bold.ttf"
+    fontLocation = "Open_Sans/OpenSans-ExtraBold.ttf"
 
     # find biggest font size that works
     fontSize = int(imageSize[1] / 5)

@@ -1,4 +1,6 @@
 dash
+plotly
 textgenrnn
 pillow
 pandas
+gunicorn

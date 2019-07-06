@@ -1,1 +1,1 @@
-web: gunicorn app:server
+web: gunicorn visual_meme_generator:server

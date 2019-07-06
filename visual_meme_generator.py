@@ -63,7 +63,7 @@ app.layout = html.Div(
              className="""w3-center"""),
          html.Div(id='slider-output-container', className="w3-margin-bottom"),
          html.Div(id='output-submit'),
-         html.Button('Generate AI', id='ai-button'),
+         html.Button('Generate AI', id='ai-button', className="w3-margin-bottom"),
          html.Label("""Edit the text to generate the image!"""),
 
          dcc.Textarea(id='user-text-input', value='Choose text to place on the image',

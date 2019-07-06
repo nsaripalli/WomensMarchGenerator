@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import base64
+import os
 import random
 
 import dash
@@ -34,19 +35,6 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
 static_image_route = 'imgs/static/'
-
-
-def generate_table(dataframe, max_rows=10):
-    return html.Table(
-        # Header
-        [html.Tr([html.Th(col) for col in dataframe.columns])] +
-
-        # Body
-        [html.Tr([
-            html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
-        ]) for i in range(min(len(dataframe), max_rows))]
-    )
-
 
 app.layout = html.Div(
     [html.Div([html.H1("""Women's March Poster Generator"""),
@@ -143,12 +131,15 @@ def split_lines(sentence):
 
 
 def make_the_image(str, img_file):
+    # Heroku requires generated files to be under tmp.
+    os.makedirs("/tmp/imgs/generated/", exist_ok=True)
+
     topString, bottomString = split_lines(str)
 
     filename = static_image_route + img_file
 
     # TODO do not do random ints
-    outputFileName = "imgs/generated/{}_temp{}.jpg".format(img_file.split(".")[0], random.randint(1, 999999999999))
+    outputFileName = "/tmp/imgs/generated/{}_temp{}.jpg".format(img_file.split(".")[0], random.randint(1, 999999999999))
 
     img = Image.open(filename)
     imageSize = img.size

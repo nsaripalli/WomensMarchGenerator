@@ -69,7 +69,7 @@ app.layout = html.Div(
                       style={'width': '100%'}, className="w3-margin-bottom"),
          html.Div(
              [html.Label("""Select an image for the poster generation."""),
-              dcc.Slider(id="image-slider", min=0, max=number_of_images, step=1, value=40),
+              dcc.Slider(id="image-slider", min=0, max=number_of_images, step=1, value=43),
               html.Div(id='image-slider-output', className="w3-margin-bottom"),
               html.Div([html.Img(id='image_selection_preview', width="""10%""", height="auto"), ]), ],
              className="w3-margin-bottom"),

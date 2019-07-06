@@ -32,14 +32,18 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css',
                         'https://codepen.io/chriddyp/pen/brPBPO.css',
                         'https://www.w3schools.com/w3css/4/w3.css']
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__,
+                external_stylesheets=external_stylesheets,
+                meta_tags=[{'name': 'viewport',
+                            'content': 'width=device-width, initial-scale=1'}])
+
 app.title = 'Art of the March Generator'
 server = app.server
 
 static_image_route = 'imgs/static/'
 
 app.layout = html.Div(
-    [html.Div([html.H1("""Art of the March Generator"""),
+    [html.Div([html.H1("""Art of the March Generator""", style={'font-size' : "-webkit-xxx-large"}),
                html.P("""This is an experimental "AI" that generates women's march posters.""")],
               className="w3-container w3-blue w3-padding-48 w3-center"),
      html.Div([
@@ -61,13 +65,12 @@ app.layout = html.Div(
              [html.Label("""Select an image for the poster generation."""),
               dcc.Slider(id="image-slider", min=0, max=number_of_images, step=1, value=43 ),
               html.Div(id='image-slider-output', className="w3-margin-bottom"),
-              html.Div([html.Img(id='image_selection_preview', width="""10%""", height="auto"), ]), ],
+              html.Div([html.Img(id='image_selection_preview', width="""30%""", height="auto"), ]), ],
              className="w3-margin-bottom"),
          html.Button('Generate image based on text',
                      id='pic-button',
                      className="""w3-button;
-                                  w3-blue""",
-                     style={'width': '562px', 'height': '52px'}), ],
+                                  w3-blue""",), ],
          className="w3-container w3-margin w3-center"),
      html.Div(html.Img(id='image', style={'max-width': '100%', 'height': 'auto'}), className="w3-card-4 w3-hover-shadow w3-margin w3-center"), ])
 

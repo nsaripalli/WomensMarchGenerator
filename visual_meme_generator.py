@@ -34,6 +34,7 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css',
                         'https://www.w3schools.com/w3css/4/w3.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app.title = 'Art of the March Generator'
 server = app.server
 
 static_image_route = 'imgs/static/'
@@ -68,7 +69,7 @@ app.layout = html.Div(
                       style={'width': '100%'}, className="w3-margin-bottom"),
          html.Div(
              [html.Label("""Select an image for the poster generation."""),
-              dcc.Slider(id="image-slider", min=0, max=number_of_images, step=1, value=50),
+              dcc.Slider(id="image-slider", min=0, max=number_of_images, step=1, value=40),
               html.Div(id='image-slider-output', className="w3-margin-bottom"),
               html.Div([html.Img(id='image_selection_preview', width="""10%""", height="auto"), ]), ],
              className="w3-margin-bottom"),
@@ -212,7 +213,6 @@ def update_image_src(n_clicks, str, value):
     output_file = make_the_image(str,  dropdown_files.iloc[value]['value'])
     encoded_image = base64.b64encode(open(output_file, 'rb').read())
     return 'data:image/png;base64,{}'.format(encoded_image.decode())
-
 
 if __name__ == '__main__':
     app.run_server(debug=True)

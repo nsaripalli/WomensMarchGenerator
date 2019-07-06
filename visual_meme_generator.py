@@ -16,6 +16,7 @@ from PIL import ImageDraw
 
 import pandas as pd
 
+
 dropdown_files = pd.read_csv("dropdown_options.csv")
 dropdown_df = dropdown_files.to_dict("records")
 dropdown_options = list(dropdown_files['value'])
@@ -24,10 +25,10 @@ maxNumberOfPosterGenerationsPerQuery = 5
 num_cashes_per_type_of_query = 1000
 
 image_directory = 'static/'
-
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+server = app.server
 
 static_image_route = 'imgs/static/'
 
@@ -211,4 +212,4 @@ def update_image_src(n_clicks, str, file_name):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=True)

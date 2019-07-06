@@ -25,7 +25,10 @@ maxNumberOfPosterGenerationsPerQuery = 5
 num_cashes_per_type_of_query = 1000
 
 image_directory = 'static/'
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css',
+                        'https://codepen.io/chriddyp/pen/brPBPO.css',
+                        'https://www.w3schools.com/w3css/4/w3.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
@@ -105,16 +108,6 @@ def generate_text(numGen, temperature, randomState, return_as_list=True):
     textgen_2 = get_textgenn()
     out = textgen_2.generate(numGen, temperature=temperature, return_as_list=return_as_list)
     return out
-
-
-# Dash CSS
-app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
-
-# Loading screen CSS
-app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/brPBPO.css"})
-
-# W3 CSS
-app.css.append_css({"external_url": "https://www.w3schools.com/w3css/4/w3.css"})
 
 
 @app.callback([Output("dropdown", "options")],

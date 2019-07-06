@@ -24,7 +24,6 @@ dropdown_df = dropdown_files.to_dict("records")
 dropdown_options = list(dropdown_files['value'])
 
 
-maxNumberOfPosterGenerationsPerQuery = 5
 num_cashes_per_type_of_query = 1000
 
 image_directory = 'static/'
@@ -54,15 +53,6 @@ app.layout = html.Div(
          html.Div(id='slider-output-container', className="w3-margin-bottom"),
          html.Div(id='output-submit'),
          html.Button('Generate AI', id='ai-button'),
-         html.Label("""OPTIONAL: Use the drop down to get an AI suggested text.""", className="w3-margin-top"),
-         dcc.Dropdown(
-             id='dropdown',
-             options=[{
-                 "label": "Women's Rights are Human Rights",
-                 "value": "Women's Rights are Human Rights"
-             }],
-             clearable=False,
-             placeholder="Select text", className="w3-margin-bottom"),
          html.Label("""Edit the text to generate the image!"""),
 
          dcc.Textarea(id='user-text-input', value='Choose text to place on the image',
@@ -116,16 +106,15 @@ def generate_text(numGen, temperature, randomState, return_as_list=True):
     return out
 
 
-@app.callback([Output("dropdown", "options")],
+@app.callback([Output("user-text-input", "value")],
               [dash.dependencies.Input('ai-button', 'n_clicks'), ],
               [State('input-2-submit', 'value')])
 def update_output(ns1, input2):
-    numGen = maxNumberOfPosterGenerationsPerQuery
     intTemp = max(0, min(1, float(input2)))
-    out = (generate_text(numGen, temperature=intTemp, randomState=random.randint(1, num_cashes_per_type_of_query),
+    out = (generate_text(1, temperature=intTemp, randomState=random.randint(1, num_cashes_per_type_of_query),
                          return_as_list=True))
 
-    return [[{'label': val, 'value': val} for val in out]]
+    return out
 
 
 @app.callback(
@@ -133,13 +122,6 @@ def update_output(ns1, input2):
     [dash.dependencies.Input('input-2-submit', 'value')])
 def update_ai_creativity_to_user(value):
     return '"AI" creativity slider set to {} percent'.format(value * 100)
-
-
-@app.callback(
-    dash.dependencies.Output('user-text-input', 'value'),
-    [dash.dependencies.Input('dropdown', 'value')])
-def selected_text_in_dropdown(value):
-    return value
 
 
 def split_lines(sentence):

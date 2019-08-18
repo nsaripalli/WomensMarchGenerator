@@ -1,0 +1,42 @@
+#final-image {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+#user-text-input {
+    width: 100%
+}
+
+#image-selection-preview {
+    width: 30%;
+    height: auto
+}
+
+* {
+    box-sizing: border-box;
+    flex: 1.5 1;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    padding: 40px 5%;
+    min-height: 100vh;
+}
+
+.column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    padding: 10px;
+}
+
+/* On screens that are 1000px wide or less, make the columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 1000px) {
+    .row {
+        flex-direction: column;
+    }
+}

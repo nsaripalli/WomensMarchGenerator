@@ -1,21 +1,18 @@
 # -*- coding: utf-8 -*-
 import base64
+import functools
+import math
 import os
-import random
 
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Output, State
-import functools
-
-import math
-from textgenrnn import textgenrnn
-from PIL import ImageFont
+import pandas as pd
 from PIL import Image
 from PIL import ImageDraw
-
-import pandas as pd
+from PIL import ImageFont
+from dash.dependencies import Output, State
+from textgenrnn import textgenrnn
 
 dropdown_files = pd.read_csv("dropdown_options.csv")
 number_of_images = len(dropdown_files) - 1
@@ -83,11 +80,9 @@ app.layout = html.Div(
     dash.dependencies.Output('image-selection-preview', 'src'),
     [dash.dependencies.Input('image-slider', 'value')])
 def update_image_src(value):
+    """Gives a preview of the image selected by the slider."""
     image_df = dropdown_files.iloc[value]
     image_file_path = image_df['value']
-
-    if image_file_path not in dropdown_options:
-        raise Exception('"{}" is excluded from the allowed static files'.format(value))
 
     encoded_image = base64.b64encode(open(static_image_route + image_file_path, 'rb').read())
     return 'data:image/png;base64,{}'.format(encoded_image.decode())
@@ -96,7 +91,9 @@ def update_image_src(value):
 @app.callback(
     dash.dependencies.Output('image-slider-output', 'children'),
     [dash.dependencies.Input('image-slider', 'value')])
-def update_ai_creativity_to_user(value):
+def update_name_for_poster_selection(value):
+    """Returns the name of the poster selected by the user when
+    using the image slider."""
     image_df = dropdown_files.iloc[value]
     return image_df['label']
 
@@ -117,6 +114,8 @@ def generate_text(numGen, temperature, return_as_list=True):
               [dash.dependencies.Input('generate-ai-button', 'n_clicks'), ],
               [State('creativity-slider', 'value')])
 def update_output(ns1, input2):
+    """Restricts the textgenn temperature to between 0 and 100% percent. Then generates
+    a new 'AI' generated slogan"""
     temperature_within_bounderies = max(0, min(1, float(input2)))
     out = generate_text(1, temperature=temperature_within_bounderies)
 
@@ -127,6 +126,8 @@ def update_output(ns1, input2):
     dash.dependencies.Output('slider-output-container', 'children'),
     [dash.dependencies.Input('creativity-slider', 'value')])
 def update_ai_creativity_to_user(value):
+    """Outputs a string corresponding to how creative the textgennrn program
+    will be as selected with the user inputted slider."""
     return '"AI" creativity slider set to {} percent'.format(value * 100)
 
 
@@ -136,14 +137,21 @@ def split_lines(sentence):
     return " ".join(words[:split_space]), " ".join(words[split_space:])
 
 
+# TODO clean this up
 def make_the_image(str, img_file):
-    """Largly inspired by https://github.com/danieldiekmeier/memegenerator/blob/master/memegenerator.py"""
+    """Largly inspired by https://github.com/danieldiekmeier/memegenerator/blob/master/memegenerator.py
+    This takes an image_file that is stored as part of the dropdown options and overlays
+    a string inputted onto the poster."""
+
     # Heroku requires generated files to be under tmp.
     os.makedirs("/tmp/imgs/generated/", exist_ok=True)
 
     name, ext = os.path.splitext(img_file)
     outputFileName = "/tmp/imgs/generated/{}_temp{}.{}".format(name, hash(str), ext)
 
+    # If we have already made one in the past with the same image and poster we can
+    # go ahead and use that. Using a hash means we might have a mismatch; however, it will be
+    # very rare to where it should be okay. This is a caching mechanism.
     if not os.path.isfile(outputFileName):
         topString, bottomString = split_lines(str)
 
@@ -196,6 +204,8 @@ def make_the_image(str, img_file):
     [State(component_id='user-text-input', component_property='value'),
      State(component_id='image-slider', component_property='value')])
 def update_image_src(n_clicks, str, value):
+    """This takes the user inputted slogan and image index from the poster options and
+    outputs a new image with the slogan on the poster the user selected."""
     if str == None:
         str = "TEXT WILL GO HERE"
 

@@ -3,7 +3,7 @@ import unittest
 from visual_meme_generator import *
 
 
-class PosterGenerationTests(unittest.TestCase):
+class TestPosterGeneration(unittest.TestCase):
     def test_update_src(self):
         """This test does two things. First it verifies the image output by comparing its file size by a
         previously generated image size. Second it verifies that the caching layer is working by repeatedly running

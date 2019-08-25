@@ -215,4 +215,4 @@ def update_image_src(n_clicks, str, value):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)

@@ -1,6 +1,4 @@
 # Womens March Poster Generator
-[![This project is using Percy.io for visual regression testing.](https://percy.io/static/images/percy-badge.svg)](https://percy.io/Nithin/WomensMarchGenerator)
-
 Using a neural network, generates women's march poster images. This was done in collaboration with
 the Northeastern School of Journalsim and the Art of the March.
 
